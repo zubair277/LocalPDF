@@ -1,4 +1,4 @@
-import React from "/assets/react-vendor-Bc7KCos-.js";
+import { r as React } from "/assets/react-vendor-Bc7KCos-.js";
 
 export function ToolCard({ tool, active, onSelect }) {
   return React.createElement("button", {

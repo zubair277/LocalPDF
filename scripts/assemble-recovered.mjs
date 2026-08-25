@@ -26,6 +26,7 @@ await copy("src/engine/recovered-tools.js", "assets/recovered-tools.js");
 await copy("src/registry/tools.js", "assets/new-tools.js");
 await copy("src/styles/new-product.css", "assets/new-product.css");
 await copy("src/styles/workspace.css", "assets/workspace.css");
+await copy("src/styles/workspace-extra.css", "assets/workspace-extra.css");
 await copy("extracted/assets/Dashboard-C3JB9zw0.js", "assets/Dashboard-C3JB9zw0.js");
 await copy("extracted/assets/chevron-down-B25xREwk.js", "assets/chevron-down-B25xREwk.js");
 await copy("vendor-src/ghostscript/background-worker.js", "background-worker.js");

@@ -1,4 +1,4 @@
-import React from "/assets/react-vendor-Bc7KCos-.js";
+import { r as React } from "/assets/react-vendor-Bc7KCos-.js";
 import { tools } from "/assets/new-tools.js";
 import { ToolCard } from "/assets/ToolCard.js";
 

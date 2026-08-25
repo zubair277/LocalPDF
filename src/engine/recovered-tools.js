@@ -1,4 +1,4 @@
-import React from "/assets/react-vendor-Bc7KCos-.js";
+import { r as React } from "/assets/react-vendor-Bc7KCos-.js";
 
 const modules = {
   merge: () => import("/assets/MergeTool-D37TKGAQ.js"),

@@ -1,4 +1,4 @@
-import React from "/assets/react-vendor-Bc7KCos-.js";
+import { r as React } from "/assets/react-vendor-Bc7KCos-.js";
 import { tools, toolById } from "/assets/new-tools.js";
 import { HomePage } from "/assets/HomePage.js";
 import { WorkspacePage } from "/assets/WorkspacePage.js";
@@ -13,6 +13,9 @@ export function AppShell() {
     const path = location.pathname.replace(/^\//, "");
     const match = tools.find((tool) => tool.path === path);
     if (location.pathname === "/about") setSelected("about"); else if (match) setSelected(match.id);
+    const onPopState = () => { const next = location.pathname.replace(/^\//, ""); const found = tools.find((tool) => tool.path === next); setSelected(location.pathname === "/about" ? "about" : found?.id || "dashboard"); };
+    addEventListener("popstate", onPopState);
+    return () => removeEventListener("popstate", onPopState);
   }, []);
   return React.createElement("div", { className: "product-shell" },
     React.createElement("header", { className: "topbar" },

@@ -20,10 +20,11 @@ const mime = {
 
 const sendFile = async (file, response, headOnly = false) => {
   const info = await stat(file);
+  const sourceOwnedAsset = /\/(?:app-main|AppShell|HomePage|WorkspacePage|AboutPage|ToolCard|WorkspaceComponents|recovered-tools|new-tools|new-product|workspace|workspace-extra)\.(?:js|css)$/.test(file);
   response.writeHead(200, {
     "Content-Type": mime[extname(file)] || "application/octet-stream",
     "Content-Length": info.size,
-    "Cache-Control": file.endsWith("index.html") ? "no-cache" : "public, max-age=31536000, immutable",
+    "Cache-Control": file.endsWith("index.html") || sourceOwnedAsset ? "no-cache" : "public, max-age=31536000, immutable",
   });
   if (headOnly) response.end();
   else createReadStream(file).pipe(response);
