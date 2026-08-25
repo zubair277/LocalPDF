@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.DS_Store
+*.log
+
+# GitHub's regular Git file limit is 100 MB. These large model graphs are
+# documented in docs/OFFLINE-BASELINE.md and can be supplied via release/LFS.
+vendor-src/models/Xenova/distilbart-cnn-6-6/**/onnx/encoder_model_quantized.onnx
+vendor-src/models/Xenova/distilbart-cnn-6-6/**/onnx/decoder_model_merged_quantized.onnx
+
