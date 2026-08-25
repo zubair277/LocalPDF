@@ -13,8 +13,16 @@ const copy = async (source, destination) => {
 
 await rm(dist, { recursive: true, force: true });
 await mkdir(assets, { recursive: true });
-await copy("extracted/index.html", "index.html");
+await copy("public/index.html", "index.html");
 await copy("recovered", "assets");
+await copy("src/app/main.js", "assets/app-main.js");
+await copy("src/components/AppShell.js", "assets/AppShell.js");
+await copy("src/components/ToolCard.js", "assets/ToolCard.js");
+await copy("src/pages/HomePage.js", "assets/HomePage.js");
+await copy("src/pages/WorkspacePage.js", "assets/WorkspacePage.js");
+await copy("src/engine/recovered-tools.js", "assets/recovered-tools.js");
+await copy("src/registry/tools.js", "assets/new-tools.js");
+await copy("src/styles/new-product.css", "assets/new-product.css");
 await copy("extracted/assets/Dashboard-C3JB9zw0.js", "assets/Dashboard-C3JB9zw0.js");
 await copy("extracted/assets/chevron-down-B25xREwk.js", "assets/chevron-down-B25xREwk.js");
 await copy("vendor-src/ghostscript/background-worker.js", "background-worker.js");

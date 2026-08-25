@@ -1,0 +1,26 @@
+export const tools = [
+  ["merge", "Merge PDF", "Combine files into one document", "merge-pdf", "Organize", "↔"],
+  ["split", "Split PDF", "Extract pages or ranges", "split-pdf", "Organize", "⌁"],
+  ["compress", "Compress PDF", "Reduce file size locally", "compress-pdf", "Organize", "↓"],
+  ["rotate", "Rotate PDF", "Turn pages to the right angle", "rotate-pdf", "Organize", "⟳"],
+  ["organize", "Organize PDF", "Reorder and remove pages", "organize-pages", "Organize", "☷"],
+  ["watermark", "Watermark", "Stamp pages with text", "add-watermark", "Annotate", "✦"],
+  ["pagenumbers", "Page Numbers", "Number every page", "page-numbers", "Annotate", "#"],
+  ["cropresize", "Crop / Resize", "Adjust page boundaries", "crop-resize-pdf", "Annotate", "□"],
+  ["redact", "Redact", "Permanently hide sensitive content", "redact-pdf", "Protect", "▰"],
+  ["encryptpdf", "Encrypt PDF", "Protect a document with a password", "encrypt-pdf", "Protect", "⌑"],
+  ["unlockpdf", "Unlock PDF", "Remove document restrictions", "unlock-pdf", "Protect", "⌑"],
+  ["fillform", "Fill PDF", "Complete interactive forms", "fill-pdf-form", "Annotate", "✎"],
+  ["ocr", "OCR PDF", "Make scanned pages searchable", "ocr-pdf", "Extract", "◎"],
+  ["extract", "Extract Text", "Pull text from a PDF", "extract-text", "Extract", "≡"],
+  ["pdftojpg", "PDF to JPG", "Render pages as images", "pdf-to-jpg", "Convert", "▧"],
+  ["images", "Images to PDF", "Bundle images into a PDF", "images-to-pdf", "Convert", "▨"],
+  ["pdftodocx", "PDF to Word", "Create an editable document", "pdf-to-word", "Convert", "W"],
+  ["pdftoexcel", "PDF to Excel", "Extract tables to a workbook", "pdf-to-excel", "Convert", "▦"],
+  ["pdftohtml", "PDF to HTML", "Export a web document", "pdf-to-html", "Convert", "<>"],
+  ["pdftozip", "PDF to ZIP", "Package page exports", "pdf-to-zip", "Convert", "⌘"],
+  ["repair", "Repair PDF", "Recover a damaged file", "repair-pdf", "Organize", "⌁"],
+  ["pdftopptx", "PDF to PPTX", "Create editable slides", "pdf-to-pptx", "Convert", "P"],
+].map(([id, title, description, path, category, icon]) => ({ id, title, description, path, category, icon }));
+
+export const toolById = Object.fromEntries(tools.map((tool) => [tool.id, tool]));
