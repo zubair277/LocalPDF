@@ -1,4 +1,5 @@
 import { r as React } from "/assets/react-vendor-Bc7KCos-.js";
+import { loadToolDependencies } from "/assets/runtime-dependencies.js";
 
 const modules = {
   merge: () => import("/assets/MergeTool-D37TKGAQ.js"),
@@ -38,7 +39,7 @@ export function RecoveredTool({ id, onNotice, onDownload, onBack }) {
       setError(new Error(`No recovered module is mapped for ${id}`));
       return () => { active = false; };
     }
-    loader().then((module) => active && setComponent(() => module.default)).catch((reason) => {
+    loadToolDependencies(id).then(loader).then((module) => active && setComponent(() => module.default)).catch((reason) => {
       if (active) setError(reason);
     });
     return () => { active = false; };

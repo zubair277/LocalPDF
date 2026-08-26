@@ -30,6 +30,7 @@ await copy("src/pages/WorkspacePage.js", "assets/WorkspacePage.js");
 await copy("src/pages/AboutPage.js", "assets/AboutPage.js");
 await copy("src/pages/PrivacyPage.js", "assets/PrivacyPage.js");
 await copy("src/engine/recovered-tools.js", "assets/recovered-tools.js");
+await copy("src/engine/runtime-dependencies.js", "assets/runtime-dependencies.js");
 await copy("src/registry/tools.js", "assets/new-tools.js");
 await copy("src/styles/new-product.css", "assets/new-product.css");
 await copy("src/styles/workspace.css", "assets/workspace.css");
