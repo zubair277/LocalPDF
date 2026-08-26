@@ -25,22 +25,38 @@ const modules = {
   pdftopptx: () => import("/assets/PdfToPptxTool-BR39XzV-.js"),
 };
 
-export function RecoveredTool({ id, onNotice }) {
+export function RecoveredTool({ id, onNotice, onDownload, onBack }) {
   const [Component, setComponent] = React.useState(null);
   const [error, setError] = React.useState(null);
+  const [attempt, setAttempt] = React.useState(0);
   React.useEffect(() => {
     let active = true;
     const loader = modules[id];
-    if (!loader) return undefined;
+    setComponent(null);
+    setError(null);
+    if (!loader) {
+      setError(new Error(`No recovered module is mapped for ${id}`));
+      return () => { active = false; };
+    }
     loader().then((module) => active && setComponent(() => module.default)).catch((reason) => {
       if (active) setError(reason);
     });
     return () => { active = false; };
-  }, [id]);
-  if (error) return React.createElement("div", { className: "state error" }, "This tool could not be loaded.");
-  if (!Component) return React.createElement("div", { className: "state" }, "Loading workspace…");
+  }, [id, attempt]);
+  if (error) return React.createElement("div", { className: "state state-error", role: "alert" },
+    React.createElement("strong", null, "This tool could not be loaded."),
+    React.createElement("p", null, "The local module may be unavailable. You can retry without leaving the workspace."),
+    React.createElement("div", { className: "state-actions" },
+      React.createElement("button", { className: "button-primary", type: "button", onClick: () => setAttempt((value) => value + 1) }, "Retry"),
+      React.createElement("button", { className: "button-secondary", type: "button", onClick: onBack }, "Back to tools"),
+    ),
+  );
+  if (!Component) return React.createElement("div", { className: "state state-loading", role: "status" },
+    React.createElement("span", { className: "loading-spinner", "aria-hidden": "true" }),
+    React.createElement("span", null, "Loading workspace…"),
+  );
   return React.createElement(Component, {
     showNotification: onNotice,
-    showDownloadDialog: () => {},
+    showDownloadDialog: onDownload,
   });
 }
