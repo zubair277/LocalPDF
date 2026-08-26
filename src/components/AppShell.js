@@ -1,13 +1,21 @@
 import { r as React } from "/assets/react-vendor-Bc7KCos-.js";
-import { categories, toolById, toolsInCategory } from "/assets/new-tools.js";
+import { categories, tools, toolById, toolsInCategory } from "/assets/new-tools.js";
 import { resolveRoute, routeFor } from "/assets/routes.js";
 import { HomePage } from "/assets/HomePage.js";
 import { WorkspacePage } from "/assets/WorkspacePage.js";
 import { AboutPage } from "/assets/AboutPage.js";
+import { PrivacyPage } from "/assets/PrivacyPage.js";
 import { Notifications } from "/assets/Notifications.js";
 import { DownloadDialog } from "/assets/DownloadDialog.js";
 
 const validSeverities = new Set(["success", "error", "warning", "info"]);
+
+function matchesTool(tool, query) {
+  const terms = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
+  if (!terms.length) return true;
+  const words = `${tool.title} ${tool.description} ${tool.category}`.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+  return terms.every((term) => words.some((word) => word.startsWith(term)));
+}
 
 function storedTool() {
   try {
@@ -18,9 +26,8 @@ function storedTool() {
 }
 
 function ToolLinks({ route, query, onNavigate, mobile = false }) {
-  const needle = query.trim().toLowerCase();
-  return categories.map((category) => {
-    const matches = toolsInCategory(category).filter((tool) => !needle || `${tool.title} ${tool.description}`.toLowerCase().includes(needle));
+  const groups = categories.map((category) => {
+    const matches = toolsInCategory(category).filter((tool) => matchesTool(tool, query));
     if (!matches.length) return null;
     const links = matches.map((tool) => React.createElement("button", {
       key: tool.id,
@@ -29,7 +36,7 @@ function ToolLinks({ route, query, onNavigate, mobile = false }) {
       onClick: () => onNavigate(tool.id),
       "aria-current": route.tool?.id === tool.id ? "page" : undefined,
     }, React.createElement("span", { className: "nav-glyph", "aria-hidden": "true" }, tool.glyph), tool.title));
-    if (mobile) return React.createElement("details", { key: category, className: "mobile-nav-group", open: route.tool?.category === category || Boolean(needle) },
+    if (mobile) return React.createElement("details", { key: category, className: "mobile-nav-group", open: route.tool?.category === category || Boolean(query.trim()) },
       React.createElement("summary", null, category),
       React.createElement("div", { className: "mobile-nav-links" }, links),
     );
@@ -37,7 +44,16 @@ function ToolLinks({ route, query, onNavigate, mobile = false }) {
       React.createElement("h2", { id: `nav-${category.replaceAll(" ", "-")}`, className: "eyebrow tools-label" }, category),
       links,
     );
-  });
+  }).filter(Boolean);
+  if (!groups.length) return React.createElement("p", { className: "nav-empty", role: "status" }, "No tools match your search.");
+  return groups;
+}
+
+function BrandSymbol() {
+  return React.createElement("svg", { viewBox: "0 0 32 32", "aria-hidden": "true" },
+    React.createElement("path", { d: "M8 5h11l5 5v17H8z" }),
+    React.createElement("path", { d: "M19 5v6h5M12 16h8M12 21h8", className: "brand-symbol-lines" }),
+  );
 }
 
 export function AppShell() {
@@ -48,6 +64,10 @@ export function AppShell() {
   const [download, setDownload] = React.useState(null);
   const notificationId = React.useRef(0);
   const mainRef = React.useRef(null);
+  const hasCompletedInitialRoute = React.useRef(false);
+  const visibleToolCount = React.useMemo(() => {
+    return tools.filter((tool) => matchesTool(tool, query)).length;
+  }, [query]);
 
   const dismissNotification = React.useCallback((id) => setNotifications((items) => items.filter((item) => item.id !== id)), []);
   const notify = React.useCallback((message, severity = "success") => {
@@ -71,7 +91,9 @@ export function AppShell() {
     const applyLocation = () => {
       const canonical = location.pathname.length > 1 ? location.pathname.replace(/\/+$/, "") : location.pathname;
       if (canonical !== location.pathname) history.replaceState({}, "", canonical);
-      setRoute(resolveRoute(canonical));
+      const nextRoute = resolveRoute(canonical);
+      if (nextRoute.canonicalPath && nextRoute.canonicalPath !== canonical) history.replaceState({}, "", nextRoute.canonicalPath);
+      setRoute(nextRoute);
       setQuery("");
     };
     addEventListener("popstate", applyLocation);
@@ -85,7 +107,8 @@ export function AppShell() {
       try { localStorage.setItem("document-desk_last_tool", route.tool.id); } catch {}
       setLastTool(route.tool);
     }
-    requestAnimationFrame(() => mainRef.current?.focus({ preventScroll: true }));
+    if (hasCompletedInitialRoute.current) requestAnimationFrame(() => mainRef.current?.focus({ preventScroll: true }));
+    else hasCompletedInitialRoute.current = true;
   }, [route.key]);
 
   const handleDownload = React.useCallback((name, size, bytes) => {
@@ -95,7 +118,9 @@ export function AppShell() {
   const page = route.kind === "home"
     ? React.createElement(HomePage, { onSelect: navigate, lastTool })
     : route.kind === "about"
-      ? React.createElement(AboutPage)
+      ? React.createElement(AboutPage, { onPrivacy: () => navigate("privacy") })
+      : route.kind === "privacy"
+        ? React.createElement(PrivacyPage)
       : route.kind === "tool"
         ? React.createElement(WorkspacePage, { key: route.tool.id, id: route.tool.id, onNotice: notify, onDownload: handleDownload, onBack: () => navigate("home") })
         : React.createElement("section", { className: "not-found" },
@@ -106,22 +131,33 @@ export function AppShell() {
         );
 
   return React.createElement("div", { className: "product-shell" },
+    React.createElement("a", { className: "skip-link", href: "#main-content" }, "Skip to main content"),
     React.createElement("header", { className: "topbar" },
-      React.createElement("button", { type: "button", className: "brand", onClick: () => navigate("home"), "aria-label": "Document Desk home" }, React.createElement("span", { className: "brand-mark", "aria-hidden": "true" }, "D"), "Document Desk"),
-      React.createElement("span", { className: "tagline" }, "A quiet workspace for files"),
+      React.createElement("button", { type: "button", className: "brand", onClick: () => navigate("home"), "aria-label": "Document Desk home" }, React.createElement("span", { className: "brand-mark" }, React.createElement(BrandSymbol)), React.createElement("span", null, "Document Desk")),
+      React.createElement("span", { className: "tagline" }, "Browser PDF workspace"),
+      React.createElement("span", { className: "header-status" }, React.createElement("span", { "aria-hidden": "true" }), "22 local-first tools"),
     ),
     React.createElement("div", { className: "body-grid" },
       React.createElement("aside", { className: "sidebar", "aria-label": "Document tools" },
         React.createElement("nav", { className: "primary-nav" },
           React.createElement("p", { className: "eyebrow" }, "Workspace"),
           React.createElement("button", { type: "button", className: `nav-home${route.kind === "home" ? " active" : ""}`, onClick: () => navigate("home"), "aria-current": route.kind === "home" ? "page" : undefined }, "Overview"),
-          React.createElement("button", { type: "button", className: `nav-home${route.kind === "about" ? " active" : ""}`, onClick: () => navigate("about"), "aria-current": route.kind === "about" ? "page" : undefined }, "About & privacy"),
-          React.createElement("label", { className: "tool-search" }, React.createElement("span", null, "Find a tool"), React.createElement("input", { type: "search", value: query, onChange: (event) => setQuery(event.target.value), placeholder: "Search 22 tools" })),
+          React.createElement("button", { type: "button", className: `nav-home${route.kind === "about" ? " active" : ""}`, onClick: () => navigate("about"), "aria-current": route.kind === "about" ? "page" : undefined }, "About Document Desk"),
+          React.createElement("button", { type: "button", className: `nav-home nav-secondary${route.kind === "privacy" ? " active" : ""}`, onClick: () => navigate("privacy"), "aria-current": route.kind === "privacy" ? "page" : undefined }, "Privacy details"),
+          React.createElement("div", { className: "tool-search" },
+            React.createElement("label", { htmlFor: "tool-search-input" }, "Find a tool"),
+            React.createElement("div", { className: "search-control" },
+              React.createElement("input", { id: "tool-search-input", type: "search", value: query, onChange: (event) => setQuery(event.target.value), placeholder: "Search 22 tools", autoComplete: "off" }),
+              query && React.createElement("button", { type: "button", onClick: () => setQuery(""), "aria-label": "Clear tool search" }, "×"),
+            ),
+            React.createElement("span", { className: "search-status", "aria-live": "polite" }, query ? `${visibleToolCount} tool${visibleToolCount === 1 ? "" : "s"} found` : ""),
+          ),
           React.createElement("div", { className: "desktop-tool-nav" }, React.createElement(ToolLinks, { route, query, onNavigate: navigate })),
           React.createElement("div", { className: "mobile-tool-nav" }, React.createElement(ToolLinks, { route, query, onNavigate: navigate, mobile: true })),
+          React.createElement("div", { className: "sidebar-foot" }, React.createElement("span", { "aria-hidden": "true" }, "◌"), React.createElement("span", null, "Curated tools process files in your browser")),
         ),
       ),
-      React.createElement("main", { className: "workspace", ref: mainRef, tabIndex: -1 },
+      React.createElement("main", { id: "main-content", className: "workspace", ref: mainRef, tabIndex: -1 },
         route.kind !== "home" && route.kind !== "not-found" && React.createElement("button", { className: "back-link", type: "button", onClick: () => navigate("home") }, "← Back to overview"),
         page,
       ),

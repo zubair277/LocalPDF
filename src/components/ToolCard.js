@@ -2,8 +2,10 @@ import { r as React } from "/assets/react-vendor-Bc7KCos-.js";
 
 export function ToolCard({ tool, active, onSelect }) {
   return React.createElement("button", {
+    type: "button",
     className: `tool-card${active ? " active" : ""}`,
     onClick: () => onSelect(tool.id),
+    "aria-label": `Open ${tool.title}: ${tool.description}`,
   },
     React.createElement("span", { className: "tool-icon", "aria-hidden": "true" }, tool.glyph),
     React.createElement("span", { className: "tool-copy" },

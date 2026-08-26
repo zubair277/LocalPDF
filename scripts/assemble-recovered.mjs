@@ -14,6 +14,8 @@ const copy = async (source, destination) => {
 await rm(dist, { recursive: true, force: true });
 await mkdir(assets, { recursive: true });
 await copy("public/index.html", "index.html");
+await copy("public/favicon.svg", "favicon.svg");
+await copy("public/manifest.webmanifest", "manifest.webmanifest");
 await copy("recovered", "assets");
 await copy("src/app/main.js", "assets/app-main.js");
 await copy("src/app/routes.js", "assets/routes.js");
@@ -26,6 +28,7 @@ await copy("src/components/WorkspaceComponents.js", "assets/WorkspaceComponents.
 await copy("src/pages/HomePage.js", "assets/HomePage.js");
 await copy("src/pages/WorkspacePage.js", "assets/WorkspacePage.js");
 await copy("src/pages/AboutPage.js", "assets/AboutPage.js");
+await copy("src/pages/PrivacyPage.js", "assets/PrivacyPage.js");
 await copy("src/engine/recovered-tools.js", "assets/recovered-tools.js");
 await copy("src/registry/tools.js", "assets/new-tools.js");
 await copy("src/styles/new-product.css", "assets/new-product.css");

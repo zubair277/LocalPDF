@@ -13,6 +13,7 @@ const mime = {
   ".json": "application/json; charset=utf-8",
   ".png": "image/png",
   ".svg": "image/svg+xml",
+  ".webmanifest": "application/manifest+json; charset=utf-8",
   ".wasm": "application/wasm",
   ".woff": "font/woff",
   ".woff2": "font/woff2",
@@ -20,7 +21,7 @@ const mime = {
 
 const sendFile = async (file, response, headOnly = false) => {
   const info = await stat(file);
-  const sourceOwnedAsset = /\/(?:app-main|AppShell|HomePage|WorkspacePage|AboutPage|ToolCard|WorkspaceComponents|recovered-tools|new-tools|new-product|workspace|workspace-extra)\.(?:js|css)$/.test(file);
+  const sourceOwnedAsset = /\/(?:app-main|routes|AppShell|HomePage|WorkspacePage|AboutPage|PrivacyPage|ToolCard|WorkspaceComponents|Notifications|DownloadDialog|RecoveredErrorBoundary|recovered-tools|new-tools|new-product|workspace)\.(?:js|css)$/.test(file);
   response.writeHead(200, {
     "Content-Type": mime[extname(file)] || "application/octet-stream",
     "Content-Length": info.size,

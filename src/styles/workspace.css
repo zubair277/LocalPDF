@@ -14,7 +14,7 @@
 .loading-spinner { width: 18px; height: 18px; border: 2px solid #3c4a56; border-top-color: var(--color-accent); border-radius: 50%; animation: desk-spin .8s linear infinite; }
 @keyframes desk-spin { to { transform: rotate(360deg); } }
 
-@media (max-width: 760px) {
+@media (max-width: 820px) {
   .workspace-toolbar { display: block; }
   .local-badge { display: inline-block; margin-top: 14px; }
   .workspace-surface { padding: 14px; }
