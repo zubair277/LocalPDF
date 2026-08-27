@@ -4,9 +4,9 @@
   "description": "A focused browser workspace for everyday PDF tasks.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#0b0f14",
-  "theme_color": "#0b0f14",
+  "background_color": "#0a1014",
+  "theme_color": "#0a1014",
   "icons": [
-    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+    { "src": "/fevicon.png", "sizes": "1536x1024", "type": "image/png", "purpose": "any" }
   ]
 }

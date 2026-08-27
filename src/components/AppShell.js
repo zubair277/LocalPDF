@@ -49,19 +49,13 @@ function ToolLinks({ route, query, onNavigate, mobile = false }) {
   return groups;
 }
 
-function BrandSymbol() {
-  return React.createElement("svg", { viewBox: "0 0 32 32", "aria-hidden": "true" },
-    React.createElement("path", { d: "M8 5h11l5 5v17H8z" }),
-    React.createElement("path", { d: "M19 5v6h5M12 16h8M12 21h8", className: "brand-symbol-lines" }),
-  );
-}
-
 export function AppShell() {
   const [route, setRoute] = React.useState(() => resolveRoute());
   const [lastTool, setLastTool] = React.useState(storedTool);
   const [query, setQuery] = React.useState("");
   const [notifications, setNotifications] = React.useState([]);
   const [download, setDownload] = React.useState(null);
+  const [installPrompt, setInstallPrompt] = React.useState(null);
   const notificationId = React.useRef(0);
   const mainRef = React.useRef(null);
   const hasCompletedInitialRoute = React.useRef(false);
@@ -77,6 +71,30 @@ export function AppShell() {
     setNotifications((items) => [...items, { id, message: text, severity: normalizedSeverity }]);
     setTimeout(() => dismissNotification(id), normalizedSeverity === "error" ? 7000 : 5000);
   }, [dismissNotification]);
+
+  React.useEffect(() => {
+    const captureInstallPrompt = (event) => {
+      event.preventDefault();
+      setInstallPrompt(event);
+    };
+    addEventListener("beforeinstallprompt", captureInstallPrompt);
+    return () => removeEventListener("beforeinstallprompt", captureInstallPrompt);
+  }, []);
+
+  const installApp = React.useCallback(async () => {
+    if (matchMedia("(display-mode: standalone)").matches) {
+      notify("Document Desk is already installed on this device.", "info");
+      return;
+    }
+    if (!installPrompt) {
+      notify("Use your browser’s Install app or Add to Home Screen option to download Document Desk.", "info");
+      return;
+    }
+    await installPrompt.prompt();
+    const choice = await installPrompt.userChoice;
+    if (choice.outcome === "accepted") notify("Document Desk is being installed.", "success");
+    setInstallPrompt(null);
+  }, [installPrompt, notify]);
 
   const navigate = React.useCallback((destination, options = {}) => {
     const path = routeFor(destination);
@@ -133,9 +151,12 @@ export function AppShell() {
   return React.createElement("div", { className: "product-shell" },
     React.createElement("a", { className: "skip-link", href: "#main-content" }, "Skip to main content"),
     React.createElement("header", { className: "topbar" },
-      React.createElement("button", { type: "button", className: "brand", onClick: () => navigate("home"), "aria-label": "Document Desk home" }, React.createElement("span", { className: "brand-mark" }, React.createElement(BrandSymbol)), React.createElement("span", null, "Document Desk")),
+      React.createElement("button", { type: "button", className: "brand", onClick: () => navigate("home"), "aria-label": "Document Desk home" }, React.createElement("span", { className: "brand-mark" }, React.createElement("img", { src: "/fevicon.png", alt: "" })), React.createElement("span", null, "Document Desk")),
       React.createElement("span", { className: "tagline" }, "Browser PDF workspace"),
-      React.createElement("span", { className: "header-status" }, React.createElement("span", { "aria-hidden": "true" }), "22 local-first tools"),
+      React.createElement("div", { className: "topbar-actions" },
+        React.createElement("span", { className: "header-status" }, React.createElement("span", { "aria-hidden": "true" }), "22 local-first tools"),
+        React.createElement("button", { className: "install-cta", type: "button", onClick: installApp }, React.createElement("span", { "aria-hidden": "true" }, "↓"), "Download the app"),
+      ),
     ),
     React.createElement("div", { className: "body-grid" },
       React.createElement("aside", { className: "sidebar", "aria-label": "Document tools" },

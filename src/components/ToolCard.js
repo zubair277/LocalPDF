@@ -13,5 +13,6 @@ export function ToolCard({ tool, active, onSelect }) {
       React.createElement("small", null, tool.description),
       React.createElement("em", null, tool.category),
     ),
+    React.createElement("span", { className: "tool-arrow", "aria-hidden": "true" }, "↗"),
   );
 }

@@ -14,7 +14,7 @@ const copy = async (source, destination) => {
 await rm(dist, { recursive: true, force: true });
 await mkdir(assets, { recursive: true });
 await copy("public/index.html", "index.html");
-await copy("public/favicon.svg", "favicon.svg");
+await copy("public/fevicon.png", "fevicon.png");
 await copy("public/manifest.webmanifest", "manifest.webmanifest");
 await copy("recovered", "assets");
 await copy("src/app/main.js", "assets/app-main.js");
